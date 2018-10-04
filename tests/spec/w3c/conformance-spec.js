@@ -2,19 +2,18 @@
 describe("W3C — Conformance", () => {
   afterAll(flushIframes);
   it("includes a h2 and inject its content", async () => {
-    const ops = {
-      config: makeBasicConfig(),
-      body:
-        makeDefaultBody() +
-        `<section id='conformance'>
-            <p>CONFORMANCE</p>
-        </section>
-        <section>
-          <h2>my section</h2>
-          <p>No terms are used except SHOULD.</p>
-        </section>`,
-    };
+    const body = `
+      <section id='conformance'>
+        <p>CONFORMANCE</p>
+      </section>
+      <section>
+        <h2>my section</h2>
+        <p>No terms are used except SHOULD.</p>
+      </section>
+    `;
+    const ops = makeStandardOps(null, body);
     const doc = await makeRSDoc(ops);
+
     const conformance = doc.getElementById("conformance");
     expect(conformance.querySelectorAll("h2").length).toEqual(1);
     expect(conformance.querySelector("h2").textContent).toMatch(
@@ -30,38 +29,36 @@ describe("W3C — Conformance", () => {
   });
 
   it("includes only referenced 2119 terms", async () => {
-    const ops = {
-      config: makeBasicConfig(),
-      body:
-        makeDefaultBody() +
-        `<section id='conformance'>
-          <p>CONFORMANCE</p>
-        </section>
-        <section><h2>my section</h2>
-          <p>Terms are MUST, SHOULD, SHOULD NOT, and SHOULD  NOT.</p>
-        </section>`,
-    };
+    const body = `
+      <section id='conformance'>
+        <p>CONFORMANCE</p>
+      </section>
+      <section><h2>my section</h2>
+        <p>Terms are MUST, SHOULD, SHOULD NOT, and SHOULD  NOT.</p>
+      </section>
+    `;
+    const ops = makeStandardOps(null, body);
     const doc = await makeRSDoc(ops);
-    const $c = $("#conformance", doc);
-    const $d = $(".rfc2119", $c);
-    expect($d.length).toEqual(3);
+
+    const conformance = doc.getElementById("conformance");
+    const d = conformance.querySelectorAll(".rfc2119");
+    expect(d.length).toEqual(3);
   });
 
   it("omits the 2119 reference when there are no terms", async () => {
-    const ops = {
-      config: makeBasicConfig(),
-      body:
-        makeDefaultBody() +
-        `<section id='conformance'>
-          <p>CONFORMANCE</p>
-        </section>
-        <section><h2>my section</h2>
-          <p>Terms are not used.</p>
-        </section>`,
-    };
+    const body = `
+      <section id='conformance'>
+        <p>CONFORMANCE</p>
+      </section>
+      <section><h2>my section</h2>
+        <p>Terms are not used.</p>
+      </section>
+    `;
+    const ops = makeStandardOps(null, body);
     const doc = await makeRSDoc(ops);
-    const $c = $("#conformance", doc);
-    const $d = $(".rfc2119", $c);
-    expect($d.length).toEqual(0);
+
+    const conformance = doc.getElementById("conformance");
+    const d = conformance.querySelectorAll(".rfc2119");
+    expect(d.length).toEqual(0);
   });
 });
