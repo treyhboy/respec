@@ -5,11 +5,12 @@ import { pub } from "core/pubsubhub";
 
 export const name = "w3c/conformance";
 
-export function run(conf, doc, cb) {
-  const $confo = $("#conformance");
-  if ($confo.length) $confo.prepend(confoTmpl(conf).childNodes);
+export function run(conf) {
+  const conformance = document.getElementById("conformance");
+  if (conformance) {
+    conformance.prepend(...confoTmpl(conf).childNodes);
+  }
   // Added message for legacy compat with Aria specs
   // See https://github.com/w3c/respec/issues/793
   pub("end", "w3c/conformance");
-  cb();
 }
